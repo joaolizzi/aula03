@@ -13,7 +13,7 @@ export function parseNumeroInteiro(valor: string, nomeCampo: string): number {
   const n = Number(v);
 
   if (!Number.isInteger(n)) {
-    throw new Error(`"${nomeCampo}" deve ser um número inteiro. Você informou: ${valor}`);
+    throw new Error(`${nomeCampo} deve ser um número inteiro. Você informou: ${valor}`);
   }
 
   return n;
@@ -21,44 +21,47 @@ export function parseNumeroInteiro(valor: string, nomeCampo: string): number {
 
 export function entre(n: number, min: number, max: number, nomeCampo: string): number {
   if (n < min || n > max) {
-    throw new Error(`"${nomeCampo}" deve estar entre ${min} e ${max}. Valor: ${n}`);
+    throw new Error(`${nomeCampo} deve estar entre ${min} e ${max}. Valor: ${n}`);
   }
   return n;
 }
 
 
+// ===== DEMO =====
 async function main() {
-  // IO local só para o demo (não afeta quem importa este módulo)
+
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
 
   const perguntar = (texto: string): Promise<string> =>
-    new Promise((resolve) => rl.question(texto, (resposta: string) => resolve(resposta)));
+    new Promise((resolve) => rl.question(texto, (resposta) => resolve(resposta)));
 
   try {
-    console.log("=== Demo: validators.ts (validação de entrada) ===");
 
-    const nome = obrigatorio(await perguntar("Digite seu nome: "), "nome");
+    console.log("=== Demo: validators.ts ===");
 
-    const idadeStr = await perguntar("Digite sua idade (0–120): ");
+    const nome = obrigatorio(await perguntar("Nome: "), "nome");
+
+    const idadeStr = await perguntar("Idade (0-120): ");
     const idade = entre(parseNumeroInteiro(idadeStr, "idade"), 0, 120, "idade");
 
-    console.log("\n✅ Dados válidos!");
+    console.log("Dados validados:");
     console.log({ nome, idade });
+
   } catch (err) {
+
     const msg = err instanceof Error ? err.message : String(err);
-    console.error("\n❌ Erro de validação:", msg);
+    console.log("Erro:", msg);
+
   } finally {
+
     rl.close();
+
   }
 }
 
-
 if (require.main === module) {
-  main().catch((err) => {
-    console.error("Erro inesperado:", err);
-    process.exitCode = 1;
-  });
+  main();
 }
