@@ -27,8 +27,7 @@ export function fecharIO(): void {
 // ===== DEMO =====
 async function main() {
   try {
-    console.log("=== Demo: io.ts ===");
-
+    console.log("=== Demo: Entrada de dados (io.ts) ===");
     const nome = (await perguntar("Digite seu nome: ")).trim();
     const idadeStr = (await perguntar("Digite sua idade: ")).trim();
 

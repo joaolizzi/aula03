@@ -13,7 +13,7 @@ export function parseNumeroInteiro(valor: string, nomeCampo: string): number {
   const n = Number(v);
 
   if (!Number.isInteger(n)) {
-    throw new Error(`${nomeCampo} deve ser um número inteiro. Você informou: ${valor}`);
+    throw new Error(`"${nomeCampo}" deve ser um número inteiro. Você informou: ${valor}`);
   }
 
   return n;
@@ -21,47 +21,49 @@ export function parseNumeroInteiro(valor: string, nomeCampo: string): number {
 
 export function entre(n: number, min: number, max: number, nomeCampo: string): number {
   if (n < min || n > max) {
-    throw new Error(`${nomeCampo} deve estar entre ${min} e ${max}. Valor: ${n}`);
+    throw new Error(`"${nomeCampo}" deve estar entre ${min} e ${max}. Valor: ${n}`);
   }
   return n;
 }
 
 
-// ===== DEMO =====
 async function main() {
-
+  // IO local só para o demo (não afeta quem importa este módulo)
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
 
   const perguntar = (texto: string): Promise<string> =>
-    new Promise((resolve) => rl.question(texto, (resposta) => resolve(resposta)));
+    new Promise((resolve) => rl.question(texto, (resposta: string) => resolve(resposta)));
 
   try {
+    console.log("=== Demo: validators.ts (validação de entrada) ===");
 
-    console.log("=== Demo: validators.ts ===");
+    const nome = obrigatorio(await perguntar("Digite seu nome: "), "nome");
 
-    const nome = obrigatorio(await perguntar("Nome: "), "nome");
-
-    const idadeStr = await perguntar("Idade (0-120): ");
+    const idadeStr = await perguntar("Digite sua idade (0–120): ");
     const idade = entre(parseNumeroInteiro(idadeStr, "idade"), 0, 120, "idade");
 
-    console.log("Dados validados:");
+    const input = await perguntar("Informe sua turma (1TADS, 2TADS, 3TADS): ");
+    const turma = obrigatorio(input, "turma");
+    if (turma !== "1TADS" && turma !== "2TADS" && turma !== "3TADS") {
+      throw new Error(`Turma deve ser 1TADS, 2TADS ou 3TADS. Você informou: ${turma}`);
+    } 
+    console.log("\n✅ Dados válidos!");
     console.log({ nome, idade });
-
   } catch (err) {
-
     const msg = err instanceof Error ? err.message : String(err);
-    console.log("Erro:", msg);
-
+    console.error("\n❌ Erro de validação:", msg);
   } finally {
-
     rl.close();
-
   }
 }
 
+
 if (require.main === module) {
-  main();
+  main().catch((err) => {
+    console.error("Erro inesperado:", err);
+    process.exitCode = 1;
+  });
 }
